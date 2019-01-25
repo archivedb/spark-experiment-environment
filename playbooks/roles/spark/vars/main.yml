@@ -1,0 +1,10 @@
+---
+
+spark_version: "2.2.3"
+spark_hadoop_version: "2.7"
+spark_package_name: "spark-{{spark_version}}-bin-hadoop{{spark_hadoop_version}}"
+spark_archive_name: "{{spark_package_name}}.tgz"
+spark_archive_path: "{{archives}}/{{spark_archive_name}}"
+spark_download_mirror: "https://mirrors.tuna.tsinghua.edu.cn/apache/spark"
+spark_download_url: "{{spark_download_mirror}}/spark-{{spark_version}}/{{spark_archive_name}}"
+spark_home: "{{installations}}/{{spark_package_name}}"

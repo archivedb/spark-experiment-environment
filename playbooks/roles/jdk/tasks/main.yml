@@ -1,0 +1,13 @@
+---
+
+- name: install {{jdk_package_name}}
+  apt: name={{jdk_package_name}}
+  async: 3600
+  become: yes
+
+- name: set environment variables
+  lineinfile:
+    path: /etc/environment
+    line: JAVA_HOME={{java_home}}
+    regexp: "^JAVA_HOME="
+  become: yes

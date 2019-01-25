@@ -1,0 +1,46 @@
+---
+
+- name: check spark home status
+  stat: path={{spark_home}}
+  register: spark_home_file
+
+- name: check spark archive file status
+  stat: path={{spark_archive_path}}
+  register: spark_archive_file
+
+- name: download spark archive from {{spark_download_url}}
+  get_url: url={{spark_download_url}} dest={{spark_archive_path}}
+  when:
+  - not spark_archive_file.stat.exists
+  - not spark_home_file.stat.exists
+
+- name: unarchive spark package
+  unarchive: src={{spark_archive_path}} dest={{installations}} remote_src=yes
+  when: not spark_home_file.stat.exists
+
+- name: configure spark slaves
+  lineinfile:
+    path: "{{spark_home}}/conf/slaves"
+    line: "{{item}}"
+    create: yes
+  when: "'worker' in item"
+  loop: "{{groups.all}}"
+
+- name: configure spark environment variables
+  lineinfile:
+    path: "{{spark_home}}/conf/spark-env.sh"
+    line: SPARK_WORKER_OPTS="-Dspark.worker.cleanup.enabled=true -Dspark.worker.cleanup.appDataTtl=600"
+    create: yes
+
+- name: set environment variable spark home
+  lineinfile:
+    path: /etc/environment
+    line: SPARK_HOME={{spark_home}}
+  become: yes
+
+- name: set environment variable spark path
+  lineinfile:
+    path: /etc/profile.d/spark-path.sh
+    line: PATH=$PATH:$SPARK_HOME/bin
+    create: yes
+  become: yes

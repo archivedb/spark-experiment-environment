@@ -1,0 +1,4 @@
+---
+
+ssh_dir: "{{home}}/.ssh"
+ssh_dir_local: "{{role_path}}/files/.ssh"

@@ -1,0 +1,52 @@
+---
+
+- name: check hadoop home status
+  stat: path={{hadoop_home}}
+  register: hadoop_home_file
+
+- name: check hadoop archive file status
+  stat: path={{hadoop_archive_path}}
+  register: hadoop_archive_file
+
+- name: download hadoop archive from {{hadoop_download_url}}
+  get_url: url={{hadoop_download_url}} dest={{hadoop_archive_path}}
+  when:
+  - not hadoop_archive_file.stat.exists
+  - not hadoop_home_file.stat.exists
+
+- name: unarchive hadoop package
+  unarchive: src={{hadoop_archive_path}} dest={{installations}} remote_src=yes
+  when: not hadoop_home_file.stat.exists
+
+- name: configure hadoop slaves excluding localhost
+  lineinfile:
+    path: "{{hadoop_home}}/etc/hadoop/slaves"
+    regexp: localhost
+    state: absent
+
+- name: configure hadoop slaves
+  lineinfile:
+    path: "{{hadoop_home}}/etc/hadoop/slaves"
+    line: "{{item}}"
+    create: yes
+  when: "'worker' in item"
+  loop: "{{groups.all}}"
+
+- name: configure hadoop
+  copy: src="./{{item}}" dest="{{hadoop_home}}/{{item}}" backup=on
+  loop:
+  - etc/hadoop/core-site.xml
+  - etc/hadoop/hdfs-site.xml
+
+- name: set environment variable hadoop home
+  lineinfile:
+    path: /etc/environment
+    line: HADOOP_HOME={{hadoop_home}}
+  become: yes
+
+- name: set environment variable hadoop path
+  lineinfile:
+    path: /etc/profile.d/hadoop-path.sh
+    line: PATH=$PATH:$HADOOP_HOME/bin
+    create: yes
+  become: yes

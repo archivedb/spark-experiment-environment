@@ -1,0 +1,29 @@
+---
+
+- name: reset connection
+  meta: reset_connection
+
+- name: check whether the node is master
+  set_fact: is_master={{'master' in inventory_hostname}}
+
+- name: check jvm process status
+  command: jps -lm
+  register: jps
+  changed_when: false
+
+- name: format hdfs
+  shell: "yes | {{hadoop_home}}/bin/hdfs namenode -format"
+  when: is_master and 'hadoop.hdfs.server' not in jps.stdout
+
+- name: start hdfs
+  command: "{{hadoop_home}}/sbin/start-dfs.sh"
+  when: is_master and 'hadoop.hdfs.server' not in jps.stdout
+
+- name: start spark
+  command: "{{spark_home}}/sbin/start-all.sh"
+  when: is_master and 'spark.deploy' not in jps.stdout
+
+- name: install python
+  apt: name=python
+  async: 3600
+  become: yes

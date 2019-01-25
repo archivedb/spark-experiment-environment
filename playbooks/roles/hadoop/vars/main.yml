@@ -1,0 +1,9 @@
+---
+
+hadoop_version: "2.7.7"
+hadoop_package_name: "hadoop-{{hadoop_version}}"
+hadoop_archive_name: "{{hadoop_package_name}}.tar.gz"
+hadoop_archive_path: "{{archives}}/{{hadoop_archive_name}}"
+hadoop_download_mirror: "https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop"
+hadoop_download_url: "{{hadoop_download_mirror}}/common/hadoop-{{hadoop_version}}/{{hadoop_archive_name}}"
+hadoop_home: "{{installations}}/{{hadoop_package_name}}"

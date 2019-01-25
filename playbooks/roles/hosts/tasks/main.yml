@@ -1,0 +1,15 @@
+---
+
+- name: configure hosts excluding loopback
+  lineinfile:
+    path: /etc/hosts
+    regexp: '127\.[0-9]+\.[0-9]+\.[0-9]+\s+{{inventory_hostname}}'
+    state: absent
+  become: yes
+
+- name: configure hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{item.ip}} {{item.hostname}}"
+  loop: "{{additional_hosts}}"
+  become: yes

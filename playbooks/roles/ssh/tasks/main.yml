@@ -1,0 +1,33 @@
+---
+
+- name: check ssh key file status
+  stat: path={{ssh_dir_local}}/id_rsa
+  register: ssh_key_file
+  delegate_to: localhost
+
+- name: generate ssh keys
+  command: ssh-keygen -t rsa -q -N '' -f {{ssh_dir_local}}/id_rsa
+  when: not ssh_key_file.stat.exists
+  delegate_to: localhost
+  run_once: true
+
+- name: install public key
+  blockinfile:
+    path: "{{ssh_dir}}/authorized_keys"
+    block: "{{lookup('file', '{{ssh_dir_local}}/id_rsa.pub')}}"
+    mode: "0600"
+    create: yes
+
+- name: install private key
+  copy:
+    src: "{{ssh_dir_local}}/id_rsa"
+    dest: "{{ssh_dir}}/id_rsa"
+    mode: "0600"
+
+- name: configure ssh
+  blockinfile:
+    path: "{{ssh_dir}}/config"
+    block: |
+      Host *
+        StrictHostKeyChecking no
+    create: yes

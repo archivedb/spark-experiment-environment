@@ -1,0 +1,9 @@
+---
+
+- name: configure apt sources
+  copy: src="./etc/apt/sources.list" dest="/etc/apt/sources.list" backup=on
+  become: yes
+
+- name: update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes

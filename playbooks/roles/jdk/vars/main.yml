@@ -1,0 +1,5 @@
+---
+
+jdk_version: "8"
+jdk_package_name: "openjdk-{{jdk_version}}-jdk-headless"
+java_home: "/usr/lib/jvm/java-8-openjdk-amd64/jre"

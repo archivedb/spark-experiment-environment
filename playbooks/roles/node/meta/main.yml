@@ -1,0 +1,7 @@
+---
+
+dependencies:
+- role: ssh
+- role: hosts
+- role: hadoop
+- role: spark

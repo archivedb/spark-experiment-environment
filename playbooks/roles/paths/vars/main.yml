@@ -1,0 +1,9 @@
+---
+
+home: "{{ansible_env.HOME}}"
+
+project: "/vagrant"
+project_local: "{{playbook_dir}}/.."
+
+archives: "{{project}}/archives"
+installations: "{{home}}"
