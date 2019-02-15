@@ -1,0 +1,3 @@
+[submodule "hibench"]
+	path = hibench
+	url = https://github.com/airt/hibench
